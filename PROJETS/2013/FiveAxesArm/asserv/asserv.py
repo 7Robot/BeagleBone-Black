@@ -16,7 +16,7 @@ Chaque moteur peut avoir 2 états différents :
    1) commandé par appui sur bouton
    2) asservi en angle
 
-Voilà le principe de l'algorithme : 
+Voila  le principe de l'algorithme : 
 """
 ######################################################################################
 ######################################################################################
@@ -38,7 +38,7 @@ Pour chaque moteur :
 """
 où commande est un entier dans [[-255 ; 255]]
 et commanderMoteur(moteur,commande) effectue les différentes actions suivantes :
-renvoi un PWM proportionnel à |commande|
+renvoi un PWM proportionnel a |commande|
 active ou non la pin de sens suivant le signe de commande
 """
 ######################################################################################
@@ -49,6 +49,9 @@ active ou non la pin de sens suivant le signe de commande
 nomMoteurs = ['base', 'epaule', 'coude', 'poignet', 'main']
 moteurs = []
 
+# pin d'activation des moteurs
+pinEnableMoteur = ["P9_11","P9_12","P9_23","P9_24","P9_26"]
+
 # pin des moteurs
 pinPwmMoteur = ["P9_14","P9_16","P9_22","P8_13","P8_19"]
 
@@ -57,6 +60,12 @@ pinSensMoteur = ["P9_13","P9_15","P9_21","P8_14","P8_20"]
 
 # pota des moteurs
 pinPotaMoteur = ["P9_35","P9_36","P9_37","P9_38","P9_39"]
+
+# bouton de demarrage
+pinBouton = "P8_10"
+
+# pin test
+#pinTest = ["P9_11","P9_12","P9_17","P9_18","P9_19","P9_20","P9_23","P9_24","P9_25","P9_26","P9_27","P9_28","P9_41","P9_42"]
 
 # angleMin angleMax potaMin et potaMax
 angleMinMoteur = [-pi,-pi,-pi,-pi,-pi]
@@ -80,7 +89,7 @@ commande = 0 # entier entre -255 et +255 représentant la commande à envoyer au
 #############################      FONCTIONS      ####################################
 
 def setEtatMoteurs(moteurs) :
-   """met correctement à jour les états des moteurs :
+   """met correctement a jour les états des moteurs :
    1 si m est en train d'etre commandé par boutons, 0 sinon"""
    for m in moteurs :
       # A FAIRE !!!
@@ -92,7 +101,7 @@ def getCommandeBouton(m) :
    return 0
 
 def majConsignesAngles(moteurs, consignesAngles) :
-   """ met à jour les consignes angulaires des moteurs avec le tableau consignesAngles"""
+   """ met a jour les consignes angulaires des moteurs avec le tableau consignesAngles"""
    for i,m in enumerate(moteurs) :
       m.consigneAngle = consignesAngles[i]
 
@@ -108,13 +117,26 @@ def majConsignesAngles(moteurs, consignesAngles) :
 # activation des entrées analogiques
 ADC.setup()
 
+# declaration du bouton
+GPIO.setup(pinBouton,GPIO.IN)
+
+# declaration des pins de test
+#for pin in pinTest :
+#   GPIO.setup(pin,GPIO.OUT)
+
 for i,nom in enumerate(nomMoteurs) :
 
    # création des objets Moteur
-   m = Motor(nom,pinPwmMoteur[i],pinSensMoteur[i],pinPotaMoteur[i],angleMinMoteur[i],angleMaxMoteur[i],potaMinMoteur[i],potaMaxMoteur[i])
+   m = Motor(nom,pinEnableMoteur[i],pinPwmMoteur[i],pinSensMoteur[i],pinPotaMoteur[i],angleMinMoteur[i],angleMaxMoteur[i],potaMinMoteur[i],potaMaxMoteur[i])
    moteurs.append(m)
 
-   # pin sens moteurs en sortie :
+for m in moteurs :
+
+   # pin d'activation des moteurs en sortie :
+   GPIO.setup(m.pinEnable,GPIO.OUT)
+   print(m.nom + " enable : " + m.pinEnable)
+
+   # pin sens moteurs en sortie :
    GPIO.setup(m.pinSens,GPIO.OUT)
 
    # initialisation avec les positions initiales des moteurs
@@ -122,6 +144,12 @@ for i,nom in enumerate(nomMoteurs) :
    m.majAngle()
    m.consigneAngle = m.angle
    m.etat = 0
+
+for m in moteurs :
+   GPIO.output(m.pinEnable,GPIO.LOW)
+   GPIO.output(m.pinSens,GPIO.LOW)
+   commande = 0.0
+   PWM.start(m.pinPwm, commande)
 
 ########################      FIN INITIALISATION      ################################
 ######################################################################################
@@ -132,22 +160,52 @@ for i,nom in enumerate(nomMoteurs) :
 #############################      PROGRAMME      ####################################
 
 # TEST : donner des consignes angulaires initiales
-consignesAngles = [0.3, 0.3, 0.3, 0.0, 0.0]
-majConsignesAngles(moteurs, consignesAngles)
+# consignesAngles = [0.3, 0.3, 0.3, 0.0, 0.0]
+# majConsignesAngles(moteurs, consignesAngles)
+moteurs[0].consigneAngle = 0.8
+"""moteurs[1].consigneAngle = 0.3
+moteurs[2].consigneAngle = 0.3
+moteurs[3].consigneAngle = 0.3
+moteurs[4].consigneAngle = 0.3
+
+while True :
+   moteurs[0].commander(100)"""
+
+while (GPIO.input(pinBouton) == 0) :
+   time.sleep(0.01)
+
+   """for pin in pinTest :
+      GPIO.output(pin,GPIO.HIGH)
+   time.sleep(2)
+   for pin in pinTest :
+      GPIO.output(pin,GPIO.LOW)
+   time.sleep(2)
+   #print("not ready")"""
+
+# activation de la base
+GPIO.output(moteurs[0].pinEnable,GPIO.HIGH)
+print("ready")
 # FIN TEST
 
+i=0
 while True :
 
    # déterminer l'état de chacun des moteurs (commandé par bouton ou asservi)
    setEtatMoteurs(moteurs)
 
+   i += 1
+   print(i)
    # commander chacun des moteurs
    for m in moteurs :
       # si le moteur est asservi en angle
       if m.etat == 0 :
+         m.majPota()
+         m.majAngle()
          commande = m.getCommande()
+         if m.nom == "base" :
+            print("pota :" + str(m.pota) + "   angle : "+ str(m.angle) + "   commande : "+ str(commande))
          m.commander(commande)
-         # si le moteur est controllé par bouton
+      # si le moteur est controllé par bouton
       else :
          commande = getCommandeBouton(m)
          m.commander(commande)
@@ -155,8 +213,10 @@ while True :
          m.majAngle()
          m.consigneAngle = m.angle
 
-   # temps (en ms) à attendre pour laisser un peu les PWM faire leur effet
-   time.sleep(5)
+   # temps (en s) a attendre pour laisser un peu les PWM faire leur effet
+   time.sleep(0.001)
+
+# arret des PWM, ADC et GPIO
 
 ###########################      FIN PROGRAMME      ##################################
 ######################################################################################

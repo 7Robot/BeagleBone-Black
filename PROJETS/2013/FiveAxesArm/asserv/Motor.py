@@ -18,10 +18,11 @@ class Motor :
    - sa consigne angulaire
    - son état (commandé par bouton ou asservi)"""
 
-   def __init__(self, nom, pinPwm, pinSens, pinPota, angleMin=-pi, angleMax=pi, potaMin=0.0, potaMax=1.0, consigneAngle=0.0, etat=0) :
+   def __init__(self, nom, pinEnable, pinPwm, pinSens, pinPota, angleMin=-pi, angleMax=pi, potaMin=0.0, potaMax=1.0, consigneAngle=0.0, etat=0) :
       """Initialisation de l'instance de Motor"""
 
       self.nom = nom
+      self.pinEnable = pinEnable
       self.pwm = 0
       self.pinPwm = pinPwm
       self.sens = 0
@@ -31,6 +32,7 @@ class Motor :
       self.angle = 0.0
       self.consigneAngle = consigneAngle
       self.etat = etat
+      self.sommeErreur = 0.0
 
       # min et max des valeur du pota et correspondance en angle
       self.angleMin = angleMin
@@ -49,12 +51,16 @@ class Motor :
 
       # coeficient proportionnel
       ecartPourMax = pi/2
-      coefProportionnel = 100/ecartPourMax
+      coefProportionnel = 1000/ecartPourMax
+
+      # coef integral
+      coefIntegral = 1
+      self.sommeErreur += self.getEcart()
 
       # calcul de la commande
-      commande = (self.getEcart())*coefProportionnel
+      commande = (self.getEcart())*coefProportionnel + self.sommeErreur*coefIntegral
 
-      # Traitement du dépassement des valeurs autorisées (-100..100)
+      # Traitement du dépassement des valeurs autorisée(-100..100)
       if commande < -100 :
          commande = -100
       elif commande > 100 :
@@ -69,18 +75,21 @@ class Motor :
       Attention, si la pin de sens est activée, l'architecture du pont en H fait que le cycle du PWM est inversé. Il faut donc en tenir compte et inverser le rapport cyclique du PWM"""
       if commande >= 0 :
          GPIO.output(self.pinSens, GPIO.LOW)
-         PWM.start(self.pinPwm, commande)
+         PWM.set_duty_cycle(self.pinPwm, commande)
          self.pwm = commande
          self.sens = 0
       else :
          GPIO.output(self.pinSens, GPIO.HIGH)
-         PWM.start(self.pinPwm, commande + 100)
+         PWM.set_duty_cycle(self.pinPwm, commande + 100)
          self.pwm = -commande
          self.sens = 1
 
    def majPota(self) :
       """Récupère la valeur du pota"""
+      #print ADC.read(self.pinPota)
       self.pota = ADC.read(self.pinPota)
+      # attendre 2 ms au minimum pour que l'ADC se fasse correctement
+      time.sleep(0.002)
 
    def majAngle(self) :
       """Transforme la valeur du pota en un angle en fonction des caractéristiques du pota.
