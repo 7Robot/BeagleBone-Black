@@ -59,7 +59,7 @@ pinPwmMoteur = ["P9_14","P9_16","P9_22","P8_13","P8_19"]
 pinSensMoteur = ["P9_13","P9_15","P9_21","P8_14","P8_20"]
 
 # pota des moteurs
-pinPotaMoteur = ["P9_35","P9_36","P9_37","P9_38","P9_39"]
+pinPotaMoteur = ["P9_35","P9_36","P9_33","P9_38","P9_39"]
 
 # bouton de demarrage
 pinBouton = "P8_10"
@@ -68,10 +68,10 @@ pinBouton = "P8_10"
 #pinTest = ["P9_11","P9_12","P9_17","P9_18","P9_19","P9_20","P9_23","P9_24","P9_25","P9_26","P9_27","P9_28","P9_41","P9_42"]
 
 # angleMin angleMax potaMin et potaMax
-angleMinMoteur = [-pi,-pi,-pi,-pi,-pi]
-angleMaxMoteur = [+pi,+pi,+pi,+pi,+pi]
-potaMinMoteur = [0.0, 0.0, 0.0, 0.0, 0.0]
-potaMaxMoteur = [1.0, 1.0, 1.0, 1.0, 1.0]
+angleMinMoteur = [-pi,0.0,0,-pi,-pi/2]
+angleMaxMoteur = [+pi,+pi/2,+pi/2,+pi,+pi/2]
+potaMinMoteur = [0.223, 0.216, 0.485, 0.701, 0.321]
+potaMaxMoteur = [0.777, 0.356, 0.354, 0.302, 0.693]
 
 # etats des moteurs (0 = asservi et 1 = commandé)
 etatMoteur = [0,0,0,0,0]
@@ -162,7 +162,9 @@ for m in moteurs :
 # TEST : donner des consignes angulaires initiales
 # consignesAngles = [0.3, 0.3, 0.3, 0.0, 0.0]
 # majConsignesAngles(moteurs, consignesAngles)
-moteurs[0].consigneAngle = 0.8
+moteurs[0].consigneAngle = 0.0
+moteurs[1].consigneAngle = pi/4
+moteurs[2].consigneAngle = pi/3
 """moteurs[1].consigneAngle = 0.3
 moteurs[2].consigneAngle = 0.3
 moteurs[3].consigneAngle = 0.3
@@ -183,18 +185,17 @@ while (GPIO.input(pinBouton) == 0) :
    #print("not ready")"""
 
 # activation de la base
-GPIO.output(moteurs[0].pinEnable,GPIO.HIGH)
+#GPIO.output(moteurs[0].pinEnable,GPIO.HIGH)
+GPIO.output(moteurs[1].pinEnable,GPIO.HIGH)
+GPIO.output(moteurs[2].pinEnable,GPIO.HIGH)
 print("ready")
 # FIN TEST
 
-i=0
 while True :
 
    # déterminer l'état de chacun des moteurs (commandé par bouton ou asservi)
    setEtatMoteurs(moteurs)
 
-   i += 1
-   print(i)
    # commander chacun des moteurs
    for m in moteurs :
       # si le moteur est asservi en angle
@@ -202,9 +203,9 @@ while True :
          m.majPota()
          m.majAngle()
          commande = m.getCommande()
-         if m.nom == "base" :
+         if m.nom == "main" :
             print("pota :" + str(m.pota) + "   angle : "+ str(m.angle) + "   commande : "+ str(commande))
-         m.commander(commande)
+         #m.commander(commande)
       # si le moteur est controllé par bouton
       else :
          commande = getCommandeBouton(m)

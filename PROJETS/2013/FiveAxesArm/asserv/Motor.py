@@ -56,6 +56,10 @@ class Motor :
       # coef integral
       coefIntegral = 1
       self.sommeErreur += self.getEcart()
+      if self.sommeErreur > 100 :
+         self.sommeErreur = 100
+      elif self.sommeErreur < -100 :
+         self.sommeErreur = -100
 
       # calcul de la commande
       commande = (self.getEcart())*coefProportionnel + self.sommeErreur*coefIntegral
