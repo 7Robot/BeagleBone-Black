@@ -36,30 +36,30 @@ active ou non la pin de sens suivant le signe de commande
 ######################################################################################
 #############################      VARIABLES      ####################################
 
+# les moteurs
+moteurs = ['base', 'epaule', 'coude', 'poignet', 'main']
+
 # pin des moteurs
-pinPwmMoteur[5] = {3,5,6,9,10};
+pinPwmMoteur = [3,5,6,9,10]
 
 # sens des moteurs
-const byte pinSensMoteur[5] = {2,4,7,8,12};
-boolean sensMoteur[5] = {0,0,0,0,0};
+pinSensMoteur = [2,4,7,8,12]
 
 # pota des moteurs
-const byte pinPotaMoteur[5] = {A0,A1,A2,A3,A4};
-int potaMoteur[5] = {0,0,0,0,0};
+pinPotaMoteur = [A0,A1,A2,A3,A4]
 
-# position et consigne angulaire des moteurs
-float angleMoteur[5] = {0,0,0,0,0};
-float consigneAngleMoteur[5] = {0,0,0,0,0};
+# consigne angulaire des moteurs
+consigneAngleMoteur = [0.0, 0.0, 0.0, 0.0, 0.0]
 
 # etats des moteurs (0 = asservi et 1 = commandé)
-boolean etatMoteur[5] = {0,0,0,0,0};
+etatMoteur = [0,0,0,0,0]
 
 # communication serie
-const int baudRate = 9600; // en bits/s
+baudRate = 9600 # en bits/s
 
 # autres variables
-float ecart = 0; # ecart angulaire entre la consigne et l'angle actuel
-int commande = 0; # entier entre -255 et +255 représentant la commande à envoyer au moteur
+ecart = 0.0 # ecart angulaire entre la consigne et l'angle actuel
+commande = 0 # entier entre -255 et +255 représentant la commande à envoyer au moteur
 
 
 ###########################      FIN VARIABLES      ##################################
@@ -68,28 +68,32 @@ int commande = 0; # entier entre -255 et +255 représentant la commande à envoy
 
 ######################################################################################
 ######################################################################################
-##############################      HEADER      ######################################
+#############################      FONCTIONS      ####################################
 
+"""
 # remplie correctement le tableau etatMoteur[] avec :
 # 1 si m est en train d'etre commandé par boutons, 0 sinon
-void setEtatMoteurs();
+void setEtatMoteurs(){
+   for (byte m=0; m<5; m++) {
+      # A FAIRE !!!
+      etatMoteur[m] = 0;
+   }
+}
+"""
 
-# renvoie l'écart angulaire entre la consigne et l'angle actuel du moteur m
-float getEcart(byte m);
+def getCommandeBouton(m){
+"""renvoie la commande associée aux boutons du moteur m"""
+   # A FAIRE !!!
+   return 0;
+}
 
-# convertit un écart angulaire en une commande (entier)
-int getCommande(float ecart);
+def potaToAngle(int valPota){
+"""convertit la valeur valPota (0..1023) en un angle (-pi..pi)"""
+   # A FAIRE !!!
+   return 0.0;
+}
 
-# envoie un PWM au moteur m de valeur |commande| et active ou non la pin de sens de m
-void commanderMoteur(byte m, int commande);
-
-# renvoie la commande associée aux boutons du moteur m
-int getCommandeBouton(byte m);
-
-# convertit la valeur valPota (0..1023) en un angle (-pi..pi)
-float potaToAngle(int valPota);
-
-############################      FIN HEADER      ####################################
+###########################      FIN FONCTIONS      ##################################
 ######################################################################################
 ######################################################################################
 
@@ -150,54 +154,3 @@ void loop() {
 ######################################################################################
 ######################################################################################
 
-######################################################################################
-######################################################################################
-#############################      FONCTIONS      ####################################
-
-
-# remplie correctement le tableau etatMoteur[] avec :
-# 1 si m est en train d'etre commandé par boutons, 0 sinon
-void setEtatMoteurs(){
-   for (byte m=0; m<5; m++) {
-      # A FAIRE !!!
-      etatMoteur[m] = 0;
-   }
-}
-
-# renvoie l'écart angulaire entre la consigne et l'angle actuel du moteur m
-float getEcart(byte m){
-   return consigneAngleMoteur[m] - angleMoteur[m];
-}
-
-# convertit un écart angulaire en une commande (entier)
-int getCommande(float ecart){
-   # A FAIRE !!!
-   return 0;
-}
-
-# envoie un PWM au moteur m de valeur |commande| et active ou non la pin de sens de m
-void commanderMoteur(byte m, int commande){
-   if (commande>0) {
-      sensMoteur[m] = 0;
-   } else {
-      sensMoteur[m] = 1;
-   }
-   digitalWrite(pinSensMoteur[m],sensMoteur[m]);
-   analogWrite(pinPwmMoteur[m],abs(commande));
-}
-
-# renvoie la commande associée aux boutons du moteur m
-int getCommandeBouton(byte m){
-   # A FAIRE !!!
-   return 0;
-}
-
-# convertit la valeur valPota (0..1023) en un angle (-pi..pi)
-float potaToAngle(int valPota){
-   # A FAIRE !!!
-   return 0;
-}
-
-###########################      FIN FONCTIONS      ##################################
-######################################################################################
-######################################################################################
