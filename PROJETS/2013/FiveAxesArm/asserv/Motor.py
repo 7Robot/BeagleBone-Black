@@ -72,6 +72,10 @@ class Motor :
          GPIO.output(self.pinSens, GPIO.HIGH)
          PWM.start(self.pinPwm, commande + 100)
 
+   def majPota() :
+      """Récupère la valeur du pota"""
+      self.pota = ADC.read(self.pinPota)
+
    def majAngle() :
       """Transforme la valeur du pota en un angle en fonction des caractéristiques du pota.
       self.pota doit etre à jour !"""
