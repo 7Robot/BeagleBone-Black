@@ -61,11 +61,7 @@ consigneAngleMoteur = [0.0, 0.0, 0.0, 0.0, 0.0]
 # etats des moteurs (0 = asservi et 1 = commandé)
 etatMoteur = [0,0,0,0,0]
 
-# communication serie
-baudRate = 9600 # en bits/s
-
 # autres variables
-ecart = 0.0 # ecart angulaire entre la consigne et l'angle actuel
 commande = 0 # entier entre -255 et +255 représentant la commande à envoyer au moteur
 
 
@@ -133,7 +129,6 @@ while True :
    for m in moteurs :
       # si le moteur est asservi en angle
       if m.etat == 0 :
-         ecart = m.getEcart()
          commande = m.getCommande()
          m.commander(commande)
          # si le moteur est controllé par bouton
