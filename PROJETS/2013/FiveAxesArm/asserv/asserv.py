@@ -61,9 +61,6 @@ angleMaxMoteur = [+pi,+pi,+pi,+pi,+pi]
 potaMinMoteur = [0.0, 0.0, 0.0, 0.0, 0.0]
 potaMaxMoteur = [1.0, 1.0, 1.0, 1.0, 1.0]
 
-# consigne angulaire des moteurs
-consigneAngleMoteur = [0.0, 0.0, 0.0, 0.0, 0.0]
-
 # etats des moteurs (0 = asservi et 1 = commandé)
 etatMoteur = [0,0,0,0,0]
 
@@ -90,6 +87,12 @@ def getCommandeBouton(m) :
    """renvoie la commande associée aux boutons du moteur m"""
    # A FAIRE !!!
    return 0
+
+def majConsignesAngles(moteurs, consignesAngles) :
+   """ met à jour les consignes angulaires des moteurs avec le tableau consignesAngles"""
+   for i,m in enumerate(moteurs) :
+      m.consigneAngle = consignesAngles[i]
+
 
 ###########################      FIN FONCTIONS      ##################################
 ######################################################################################
@@ -124,6 +127,11 @@ for i,nom in enumerate(nomMoteurs) :
 ######################################################################################
 ######################################################################################
 #############################      PROGRAMME      ####################################
+
+# TEST : donner des consignes angulaires initiales
+consignesAngles = [0.3, 0.3, 0.3, 0.0, 0.0]
+majConsignesAngles(moteurs, consignesAngles)
+# FIN TEST
 
 while True :
 

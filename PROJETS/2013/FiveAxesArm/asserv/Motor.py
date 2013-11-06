@@ -76,3 +76,5 @@ class Motor :
       """Transforme la valeur du pota en un angle en fonction des caractéristiques du pota.
       self.pota doit etre à jour !"""
       self.angle = self.angleMin + (self.pota-self.potaMin)*(self.angleMax-self.angleMin)/(self.potaMax-self.potaMin)
+
+   def majConsigneAngle(consigneAngulaire)
