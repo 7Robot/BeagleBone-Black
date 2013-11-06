@@ -1,5 +1,6 @@
 import Adafruit_BBIO.GPIO as GPIO
 import Adafruit_BBIO.ADC as ADC
+import Adafruit_BBIO.PWM as PWM
 import time
 from math import *
 
@@ -46,13 +47,13 @@ nomMoteurs = ['base', 'epaule', 'coude', 'poignet', 'main']
 moteurs = []
 
 # pin des moteurs
-pinPwmMoteur = [3,5,6,9,10]
+pinPwmMoteur = ["P9.14","P9.16","P9.22","P8.13","P8.19"]
 
 # sens des moteurs
-pinSensMoteur = [2,4,7,8,12]
+pinSensMoteur = ["P9.13","P9.15","P9.21","P8.14","P8.20"]
 
 # pota des moteurs
-pinPotaMoteur = [A0,A1,A2,A3,A4]
+pinPotaMoteur = ["P9.35","P9.36","P9.37","P9.38","P9.39"]
 
 # consigne angulaire des moteurs
 consigneAngleMoteur = [0.0, 0.0, 0.0, 0.0, 0.0]
@@ -106,14 +107,14 @@ for i,nom in enumerate(nomMoteurs) :
    moteurs.append(m)
 
    # pin moteurs et sens moteurs en sortie :
-   GPIO.setup(m.pinPwm,OUT);
-   GPIO.setup(m.pinSens,OUT);
+   GPIO.setup(m.pinPwm,OUT)
+   GPIO.setup(m.pinSens,OUT)
 
    # initialisation avec les positions initiales des moteurs
    m.pota = ADC.read(m.pinPota)
-   m.angle = m.potaToAngle();
-   m.consigneAngle = m.angle;
-   m.etat = 0;
+   m.angle = m.potaToAngle()
+   m.consigneAngle = m.angle
+   m.etat = 0
 
 ########################      FIN INITIALISATION      ################################
 ######################################################################################
@@ -140,8 +141,8 @@ while True :
          commande = getCommandeBouton(m)
          m.commander(commande)
          m.pota = ADC.read(m.pinPota)
-         m.angle = m.potaToAngle();
-         m.consigneAngle = m.angle;
+         m.angle = m.potaToAngle()
+         m.consigneAngle = m.angle
       }
    }
 }
