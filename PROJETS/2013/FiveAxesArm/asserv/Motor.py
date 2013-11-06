@@ -1,3 +1,5 @@
+from math import *
+
 class Motor :
    """Classe définissant un moteur, caractérisé par :
    - le rapport de cycle de son PWM
@@ -10,7 +12,7 @@ class Motor :
    - sa consigne angulaire
    - son état (commandé par bouton ou asservi)"""
 
-   def __init__(self, nom, pinPwm, pinSens, pinPota, consigneAngle=0.0, etat=0) :
+   def __init__(self, nom, pinPwm, pinSens, pinPota, angleMin=-pi, angleMax=pi, potaMin=0.0, potaMax=1.0, consigneAngle=0.0, etat=0) :
       """Initialisation de l'instance de Motor"""
 
       self.nom = nom
@@ -24,6 +26,12 @@ class Motor :
       self.consigneAngle = consigneAngle
       self.etat = etat
 
+      # min et max des valeur du pota et correspondance en angle
+      self.angleMin = angleMin
+      self.angleMax = angleMax
+      self.potaMin = potaMin
+      self.potaMax = potaMax
+
    def getEcart(self) :
       """Renvoie l'écart entre la consigne angulaire et l'angle actuel"""
       return self.consigneAngle - self.angle
@@ -36,3 +44,8 @@ class Motor :
    def commander(self, commande) :
       """Commander ce moteur avec une commande"""
       # A FAIRE
+
+   def potaToAngle() :
+      """Transforme la valeur du pota en un angle en fonction des caractéristiques du pota"""
+      # A FAIRE
+      return 0.0

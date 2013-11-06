@@ -1,3 +1,8 @@
+import Adafruit_BBIO.GPIO as GPIO
+import Adafruit_BBIO.ADC as ADC
+import time
+from math import *
+
 ######################################################################################
 # L'objectif de ce programme est d'asservir en angles chacun des 5 moteurs du bras   #
 ######################################################################################
@@ -37,7 +42,8 @@ active ou non la pin de sens suivant le signe de commande
 #############################      VARIABLES      ####################################
 
 # les moteurs
-moteurs = ['base', 'epaule', 'coude', 'poignet', 'main']
+nomMoteurs = ['base', 'epaule', 'coude', 'poignet', 'main']
+moteurs = []
 
 # pin des moteurs
 pinPwmMoteur = [3,5,6,9,10]
@@ -70,28 +76,17 @@ commande = 0 # entier entre -255 et +255 représentant la commande à envoyer au
 ######################################################################################
 #############################      FONCTIONS      ####################################
 
-"""
-# remplie correctement le tableau etatMoteur[] avec :
-# 1 si m est en train d'etre commandé par boutons, 0 sinon
-void setEtatMoteurs(){
-   for (byte m=0; m<5; m++) {
+def setEtatMoteurs(moteurs) :
+   """met correctement à jour les états des moteurs :
+   1 si m est en train d'etre commandé par boutons, 0 sinon"""
+   for m in moteurs :
       # A FAIRE !!!
-      etatMoteur[m] = 0;
-   }
-}
-"""
+      m.etat = 0
 
-def getCommandeBouton(m){
-"""renvoie la commande associée aux boutons du moteur m"""
+def getCommandeBouton(m) :
+   """renvoie la commande associée aux boutons du moteur m"""
    # A FAIRE !!!
-   return 0;
-}
-
-def potaToAngle(int valPota){
-"""convertit la valeur valPota (0..1023) en un angle (-pi..pi)"""
-   # A FAIRE !!!
-   return 0.0;
-}
+   return 0
 
 ###########################      FIN FONCTIONS      ##################################
 ######################################################################################
@@ -101,23 +96,24 @@ def potaToAngle(int valPota){
 ######################################################################################
 ##########################      INITIALISATION      ##################################
 
-void setup() {
+# activation des entrées analogiques
+ADC.setup()
 
-   for (byte m=0; m<5; m++) {
+for i,nom in enumerate(nomMoteurs) :
 
-      # pin moteurs et sens moteurs en sortie :
-      pinMode(pinPwmMoteur[m],OUTPUT);
-      pinMode(pinSensMoteur[m],OUTPUT);
+   # création des objets Moteur
+   m = Motor(nom,pinPwmMoteur[i],pinSensMoteur[i],pinPotaMoteur[i])
+   moteurs.append(m)
 
-      # initialisation avec les positions initiales des moteurs
-      potaMoteur[m] = analogRead(pinPotaMoteur[m]);
-      angleMoteur[m] = potaToAngle(potaMoteur[m]);
-      consigneAngleMoteur[m] = angleMoteur[m];
-      etatMoteur[m] = 0;
+   # pin moteurs et sens moteurs en sortie :
+   GPIO.setup(m.pinPwm,OUT);
+   GPIO.setup(m.pinSens,OUT);
 
-   }
-
-}
+   # initialisation avec les positions initiales des moteurs
+   m.pota = ADC.read(m.pinPota)
+   m.angle = m.potaToAngle();
+   m.consigneAngle = m.angle;
+   m.etat = 0;
 
 ########################      FIN INITIALISATION      ################################
 ######################################################################################
@@ -127,25 +123,25 @@ void setup() {
 ######################################################################################
 #############################      PROGRAMME      ####################################
 
-void loop() {
+while True :
 
    # déterminer l'état de chacun des moteurs (commandé par bouton ou asservi)
-   setEtatMoteurs();
+   setEtatMoteurs(moteurs)
 
    # commander chacun des moteurs
-   for (byte m=0; m<5; m++) {
+   for m in moteurs :
       # si le moteur est asservi en angle
-      if (etatMoteur[m] == 0) {
-         ecart = getEcart(m);
-         commande = getCommande(ecart);
-         commanderMoteur(m,commande);
+      if m.etat == 0 :
+         ecart = m.getEcart()
+         commande = m.getCommande()
+         m.commander(commande)
          # si le moteur est controllé par bouton
-      } else {
-         commande = getCommandeBouton(m);
-         commanderMoteur(m,commande);
-         potaMoteur[m] = analogRead(pinPotaMoteur[m]);
-         angleMoteur[m] = potaToAngle(potaMoteur[m]);
-         consigneAngleMoteur[m] = angleMoteur[m];
+      else :
+         commande = getCommandeBouton(m)
+         m.commander(commande)
+         m.pota = ADC.read(m.pinPota)
+         m.angle = m.potaToAngle();
+         m.consigneAngle = m.angle;
       }
    }
 }
@@ -153,4 +149,3 @@ void loop() {
 ###########################      FIN PROGRAMME      ##################################
 ######################################################################################
 ######################################################################################
-
