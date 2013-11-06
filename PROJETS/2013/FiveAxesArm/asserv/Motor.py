@@ -1,3 +1,7 @@
+import Adafruit_BBIO.GPIO as GPIO
+import Adafruit_BBIO.ADC as ADC
+import Adafruit_BBIO.PWM as PWM
+import time
 from math import *
 
 class Motor :
@@ -37,15 +41,30 @@ class Motor :
       return self.consigneAngle - self.angle
 
    def getCommande(self) :
-      """Renvoie une commande pour le moteur"""
-      # A FAIRE
-      return 0
+      """Renvoie une commande pour asservir le moteur en position.
+      La commande est comprise entre -100.0 et +100.0"""
+      # A FAIRE : pour l'instant juste proportionnel
+      coefProportionnel = 100/(self.angleMax - self.angleMin)
+      commande = (self.getEcart)*coefProportionnel
+      if commande < -100 :
+         commande = -100
+      elif commande > 100 :
+         commande = 100
+      else :
+         commande = commande
+      return commande
 
    def commander(self, commande) :
-      """Commander ce moteur avec une commande"""
-      # A FAIRE
+      """Commander ce moteur avec une commande.
+      Attention, si la pin de sens est activée, l'architecture du pont en H fait que le cycle du PWM est inversé. Il faut donc en tenir compte et inverser le rapport cyclique du PWM"""
+      if commande >= 0 :
+         GPIO.output(self.pinSens, GPIO.LOW)
+         PWM.start(self.pinPwm, commande)
+      else :
+         GPIO.output(self.pinSens, GPIO.HIGH)
+         PWM.start(self.pinPwm, commande + 100)
 
    def majAngle() :
-      """Transforme la valeur du pota en un angle en fonction des caractéristiques du pota
+      """Transforme la valeur du pota en un angle en fonction des caractéristiques du pota.
       self.pota doit etre à jour !"""
       self.angle = self.angleMin + (self.pota-self.potaMin)*(self.angleMax-self.angleMin)/(self.potaMax-self.potaMin)

@@ -102,9 +102,8 @@ for i,nom in enumerate(nomMoteurs) :
    m = Motor(nom,pinPwmMoteur[i],pinSensMoteur[i],pinPotaMoteur[i])
    moteurs.append(m)
 
-   # pin moteurs et sens moteurs en sortie :
-   GPIO.setup(m.pinPwm,OUT)
-   GPIO.setup(m.pinSens,OUT)
+   # pin sens moteurs en sortie :
+   GPIO.setup(m.pinSens,GPIO.OUT)
 
    # initialisation avec les positions initiales des moteurs
    m.pota = ADC.read(m.pinPota)
@@ -138,9 +137,6 @@ while True :
          m.pota = ADC.read(m.pinPota)
          m.majAngle()
          m.consigneAngle = m.angle
-      }
-   }
-}
 
 ###########################      FIN PROGRAMME      ##################################
 ######################################################################################
