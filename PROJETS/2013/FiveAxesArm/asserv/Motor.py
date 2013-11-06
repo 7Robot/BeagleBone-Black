@@ -45,7 +45,7 @@ class Motor :
       """Commander ce moteur avec une commande"""
       # A FAIRE
 
-   def potaToAngle() :
-      """Transforme la valeur du pota en un angle en fonction des caractéristiques du pota"""
-      # A FAIRE
-      return 0.0
+   def majAngle() :
+      """Transforme la valeur du pota en un angle en fonction des caractéristiques du pota
+      self.pota doit etre à jour !"""
+      self.angle = self.angleMin + (self.pota-self.potaMin)*(self.angleMax-self.angleMin)/(self.potaMax-self.potaMin)

@@ -136,7 +136,7 @@ while True :
          commande = getCommandeBouton(m)
          m.commander(commande)
          m.pota = ADC.read(m.pinPota)
-         m.angle = m.potaToAngle()
+         m.majAngle()
          m.consigneAngle = m.angle
       }
    }
