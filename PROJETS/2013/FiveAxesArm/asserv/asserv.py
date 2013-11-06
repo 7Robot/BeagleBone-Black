@@ -55,6 +55,12 @@ pinSensMoteur = ["P9.13","P9.15","P9.21","P8.14","P8.20"]
 # pota des moteurs
 pinPotaMoteur = ["P9.35","P9.36","P9.37","P9.38","P9.39"]
 
+# angleMin angleMax potaMin et potaMax
+angleMinMoteur = [-pi,-pi,-pi,-pi,-pi]
+angleMaxMoteur = [+pi,+pi,+pi,+pi,+pi]
+potaMinMoteur = [0.0, 0.0, 0.0, 0.0, 0.0]
+potaMaxMoteur = [1.0, 1.0, 1.0, 1.0, 1.0]
+
 # consigne angulaire des moteurs
 consigneAngleMoteur = [0.0, 0.0, 0.0, 0.0, 0.0]
 
@@ -99,7 +105,7 @@ ADC.setup()
 for i,nom in enumerate(nomMoteurs) :
 
    # création des objets Moteur
-   m = Motor(nom,pinPwmMoteur[i],pinSensMoteur[i],pinPotaMoteur[i])
+   m = Motor(nom,pinPwmMoteur[i],pinSensMoteur[i],pinPotaMoteur[i],angleMinMoteur[i],angleMaxMoteur[i],potaMinMoteur[i],potaMaxMoteur[i])
    moteurs.append(m)
 
    # pin sens moteurs en sortie :

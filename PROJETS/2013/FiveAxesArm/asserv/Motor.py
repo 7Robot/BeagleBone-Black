@@ -49,6 +49,7 @@ class Motor :
       ecartPourMax = pi/2
       coefProportionnel = 100/ecartPourMax
 
+      # calcul de la commande
       commande = (self.getEcart)*coefProportionnel
 
       # Traitement du dépassement des valeurs autorisées (-100..100)
