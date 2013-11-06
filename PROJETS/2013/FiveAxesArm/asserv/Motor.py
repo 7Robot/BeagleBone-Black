@@ -41,17 +41,24 @@ class Motor :
       return self.consigneAngle - self.angle
 
    def getCommande(self) :
-      """Renvoie une commande pour asservir le moteur en position.
+      """Renvoie une commande pour asservir le moteur en angle.
       La commande est comprise entre -100.0 et +100.0"""
       # A FAIRE : pour l'instant juste proportionnel
-      coefProportionnel = 100/(self.angleMax - self.angleMin)
+
+      # coeficient proportionnel
+      ecartPourMax = pi/2
+      coefProportionnel = 100/ecartPourMax
+
       commande = (self.getEcart)*coefProportionnel
+
+      # Traitement du dépassement des valeurs autorisées (-100..100)
       if commande < -100 :
          commande = -100
       elif commande > 100 :
          commande = 100
       else :
          commande = commande
+
       return commande
 
    def commander(self, commande) :
