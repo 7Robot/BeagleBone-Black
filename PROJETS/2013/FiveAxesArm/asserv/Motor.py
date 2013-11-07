@@ -70,9 +70,13 @@ class Motor :
       if commande >= 0 :
          GPIO.output(self.pinSens, GPIO.LOW)
          PWM.start(self.pinPwm, commande)
+         self.pwm = commande
+         self.sens = 0
       else :
          GPIO.output(self.pinSens, GPIO.HIGH)
          PWM.start(self.pinPwm, commande + 100)
+         self.pwm = -commande
+         self.sens = 1
 
    def majPota(self) :
       """Récupère la valeur du pota"""
