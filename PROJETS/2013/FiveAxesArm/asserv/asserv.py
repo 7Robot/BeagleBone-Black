@@ -1,6 +1,9 @@
+# -*-coding:Utf-8 -*
+
 import Adafruit_BBIO.GPIO as GPIO
 import Adafruit_BBIO.ADC as ADC
 import Adafruit_BBIO.PWM as PWM
+from Motor import *
 import time
 from math import *
 
@@ -47,13 +50,13 @@ nomMoteurs = ['base', 'epaule', 'coude', 'poignet', 'main']
 moteurs = []
 
 # pin des moteurs
-pinPwmMoteur = ["P9.14","P9.16","P9.22","P8.13","P8.19"]
+pinPwmMoteur = ["P9_14","P9_16","P9_22","P8_13","P8_19"]
 
 # sens des moteurs
-pinSensMoteur = ["P9.13","P9.15","P9.21","P8.14","P8.20"]
+pinSensMoteur = ["P9_13","P9_15","P9_21","P8_14","P8_20"]
 
 # pota des moteurs
-pinPotaMoteur = ["P9.35","P9.36","P9.37","P9.38","P9.39"]
+pinPotaMoteur = ["P9_35","P9_36","P9_37","P9_38","P9_39"]
 
 # angleMin angleMax potaMin et potaMax
 angleMinMoteur = [-pi,-pi,-pi,-pi,-pi]
@@ -115,8 +118,8 @@ for i,nom in enumerate(nomMoteurs) :
    GPIO.setup(m.pinSens,GPIO.OUT)
 
    # initialisation avec les positions initiales des moteurs
-   m.pota = ADC.read(m.pinPota)
-   m.angle = m.potaToAngle()
+   m.majPota()
+   m.majAngle()
    m.consigneAngle = m.angle
    m.etat = 0
 

@@ -1,3 +1,5 @@
+# -*-coding:Utf-8 -*
+
 import Adafruit_BBIO.GPIO as GPIO
 import Adafruit_BBIO.ADC as ADC
 import Adafruit_BBIO.PWM as PWM
@@ -50,7 +52,7 @@ class Motor :
       coefProportionnel = 100/ecartPourMax
 
       # calcul de la commande
-      commande = (self.getEcart)*coefProportionnel
+      commande = (self.getEcart())*coefProportionnel
 
       # Traitement du dépassement des valeurs autorisées (-100..100)
       if commande < -100 :
@@ -72,13 +74,11 @@ class Motor :
          GPIO.output(self.pinSens, GPIO.HIGH)
          PWM.start(self.pinPwm, commande + 100)
 
-   def majPota() :
+   def majPota(self) :
       """Récupère la valeur du pota"""
       self.pota = ADC.read(self.pinPota)
 
-   def majAngle() :
+   def majAngle(self) :
       """Transforme la valeur du pota en un angle en fonction des caractéristiques du pota.
       self.pota doit etre à jour !"""
       self.angle = self.angleMin + (self.pota-self.potaMin)*(self.angleMax-self.angleMin)/(self.potaMax-self.potaMin)
-
-   def majConsigneAngle(consigneAngulaire)
